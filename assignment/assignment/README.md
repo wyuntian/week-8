@@ -17,5 +17,3 @@ the map should become highlighted
 - The five closest points should be represented as separate elements in the sidebar
 - When the user clicks on an element in the sidebar, the corresponding point on
 the map should become highlighted
-
-var dataset = 'https://raw.githubusercontent.com/cambridgegis/cambridgegis_data/master/Landmark/Public_Art/LANDMARK_PublicArt.geojson';

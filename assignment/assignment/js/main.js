@@ -70,52 +70,54 @@ Moving your mouse outside of the circle should remove the highlighting.
 ===================== */
 
 // Global Variables
+var cambridgeData;
+var myShape;
 
-var myRectangle;
+$.ajax('https://raw.githubusercontent.com/cambridgegis/cambridgegis_data/master/Landmark/Public_Art/LANDMARK_PublicArt.geojson').done(function(data) {
+  var parsed = JSON.parse(data);
+  // Fixing an AWFUL bug caused by BAD data: Features *NEED* to have geometries...
+  cambridgeData = _.chain(parsed).value();
+  cambridgeData.features = _.filter(cambridgeData.features, function(f) { return f.geometry; });
+  L.geoJson(cambridgeData).addTo(map);});
 
-// Initialize Leaflet Draw
+  var myRectangle;
 
-var drawControl = new L.Control.Draw({
-  draw: {
-    polyline: false,
-    polygon: false,
-    circle: false,
-    marker: false,
-    rectangle: true,
-  }
-});
+  // Initialize Leaflet Draw
 
-map.addControl(drawControl);
+  var drawControl = new L.Control.Draw({
+    draw: {
+      polyline: false,
+      polygon: false,
+      circle: false,
+      marker: false,
+      rectangle: true,
+    }
+  });
 
+  map.addControl(drawControl);
 
+  // Run every time Leaflet draw creates a new layer
 
+  map.on('draw:created', function (e) {
+    if (myRectangle) { map.removeLayer(myRectangle); $("#shapes").empty() ;} //if myRectangle is defined, remove my previous layer
+    var type = e.layerType; // The type of shape
+    var layer = e.layer; // The Leaflet layer for the shape
+    myRectangle = layer;
+    var id = L.stamp(layer); // The unique Leaflet ID for the layer
+    var shape = layer.toGeoJSON();
+    map.addLayer(layer);
+    /*get the data in the rectangle*/
 
-// Run every time Leaflet draw creates a new layer
+    myShape = {
+      "type":"FeatureCollection",
+      "feature": [shape]
+    };
 
-map.on('draw:created', function (e) {
-  if (myRectangle) { map.removeLayer(myRectangle); $("#shapes").empty() ;} //if myRectangle is defined, remove my previous layer
-  var type = e.layerType; // The type of shape
-  var layer = e.layer; // The Leaflet layer for the shape
-  myRectangle = layer;
-  var id = L.stamp(layer); // The unique Leaflet ID for the layer
-  map.addLayer(myRectangle);
-  /*var id = myRectangle.getLayerId();*/
-$("#shapes").append('<div class="shape" data-leaflet-id="[the id]"><h1>Current ID: ['+id+']</h1></div>');
-/*$("#shapes").empty();*/
+   });
 
-});
+   var withined = turf.within(cambridgeData, myShape);
 
-
-var myRectangles = [];
-map.on('draw:created', function (e) {
-  if (myRectangle) { map.removeLayer(myRectangle); $("#shapes").empty() ;} //if myRectangle is defined, remove my previous layer
-  var type = e.layerType; // The type of shape
-  var layer = e.layer; // The Leaflet layer for the shape
-  myRectangle = layer;
-  var id = L.stamp(layer); // The unique Leaflet ID for the layer
-  map.addLayer(myRectangle);
-  /*var id = myRectangle.getLayerId();*/
-$("#shapes").append('<div class="shape" data-leaflet-id="[the id]"><h1>Current ID: ['+id+']</h1></div>');
-/*$("#shapes").empty();*/
-
+   _.each(withined.features, function(element){
+     /*var id = myRectangle.getLayerId();*/
+  $("#shapes").append('<div  class = "shape" id= "shape-'+element.id+'" data-id = "'+element.id+'"> <p> ID: '+element.properties.ArtID+'</p> Name <p>'+element.properties.First_Name+'</p>  </div>');
 });
