@@ -220,12 +220,6 @@ L.geoJson(averaged, {
 }).addTo(map);
 
 
-
-
-
-
-
-
 /*Exercise 3: Tagging points according to their locations
 http://turfjs.org/static/docs/module-turf_tag.html
 It can be quite useful to 'tag' points in terms of their being within this or that

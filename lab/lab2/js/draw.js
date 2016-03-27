@@ -87,9 +87,6 @@ var drawControl = new L.Control.Draw({
 
 map.addControl(drawControl);
 
-
-
-
 // Run every time Leaflet draw creates a new layer
 
 map.on('draw:created', function (e) {

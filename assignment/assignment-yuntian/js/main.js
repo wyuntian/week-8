@@ -112,12 +112,10 @@ $.ajax('https://raw.githubusercontent.com/cambridgegis/cambridgegis_data/master/
       "type":"FeatureCollection",
       "feature": [shape]
     };
-
-   });
+});
 
    var withined = turf.within(cambridgeData, myShape);
-
-   _.each(withined.features, function(element){
+ _.each(withined.features, function(element){
      /*var id = myRectangle.getLayerId();*/
   $("#shapes").append('<div  class = "shape" id= "shape-'+element.id+'" data-id = "'+element.id+'"> <p> ID: '+element.properties.ArtID+'</p> Name <p>'+element.properties.First_Name+'</p>  </div>');
 });
