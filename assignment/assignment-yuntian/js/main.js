@@ -108,14 +108,27 @@ $.ajax('https://raw.githubusercontent.com/cambridgegis/cambridgegis_data/master/
     map.addLayer(layer);
     /*get the data in the rectangle*/
 
-    myShape = {
+  myShape = {
       "type":"FeatureCollection",
-      "feature": [shape]
+      "features": [shape]
     };
-});
+    console.log(cambridgeData, myShape);
 
-   var withined = turf.within(cambridgeData, myShape);
- _.each(withined.features, function(element){
-     /*var id = myRectangle.getLayerId();*/
-  $("#shapes").append('<div  class = "shape" id= "shape-'+element.id+'" data-id = "'+element.id+'"> <p> ID: '+element.properties.ArtID+'</p> Name <p>'+element.properties.First_Name+'</p>  </div>');
+     var withined = turf.within(cambridgeData, myShape);
+     console.log(withined);
+     _.each(withined.features, function(element){
+         /*var id = myRectangle.getLayerId();*/
+      $("#shapes").append('<div  class = "shape" id= "shape-'+element.id+'" data-id = "'+element.id+'"> <p> ID: '+element.properties.ArtID+'</p> Name <p>'+element.properties.First_Name+'</p>  </div>');
+
+      $('[data-id = "'+element.id+'"]').on('click',function(){
+        var   clickBar = $(this).data('id');
+       var point =_.filter(withined.features,function(ob) { return ob.id === clickBar;});
+       console.log(clickBar);
+        console.log(point);
+       L.geoJson(point, {
+             pointToLayer: function (feature, latlng) {
+                 return L.circleMarker(latlng);}
+}).addTo(map);
+    });
+  });
 });
